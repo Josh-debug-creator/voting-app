@@ -49,12 +49,12 @@ partyExist(file){
   // Validate input
   if (typeof name !== 'string' || name.trim() === '') {
     console.log('Invalid name');
-    return;
+    return 'Invalid name';
   }
 //   validate data
   if (typeof data !== 'string' || data.trim() === '') {
     console.log('Invalid data');
-    return;
+    return 'Invalid data';
   }
 
         }

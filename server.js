@@ -19,10 +19,23 @@ if(req.method === 'POST' && req.url === '/create')
     req.on('end',function(){
         const result = [JSON.parse(body)]
         const fileName = result[0].partyName
-        if (utilities.partyExist(fileName) === true) {
+        const noOfFiles = utilities.readDirectory()
+        if  (fileName == '' || result[0].partyCandidate == '')
+            {
+                    res.writeHead(200, {"Content-Type": "text/plain"});
+                    res.end('Invalid')
+              
+                      }
+         else if  (utilities.partyExist(fileName) === true) {
             res.writeHead(500, {"Content-Type": "text/plain"});
             res.end('File already exists')
         }
+        else if (noOfFiles.length >= 3)
+        {
+            res.writeHead(500, {"Content-Type": "text/plain"});
+            res.end('Maximum limit exceeded')
+        }
+       
     else {
        
      const answer = options.createNewParties(fileName,JSON.stringify(result))  
@@ -75,6 +88,21 @@ else {
                 res.end('Invalid')
 }
 }
+else if(req.method === 'GET' && (req.url).includes('/vote'))
+    {
+        // vote
+        let body = ''
+    req.on('data',function(data){
+  body += data.toString()
+    } )
+    req.on('end',function(){
+        const result = [JSON.parse(body)]
+        const fileName = result[0].partyName
+const vote = options.voteAction(fileName)
+res.writeHead(200, {"Content-Type": "text/plain"});
+     res.end('Voted successfully')
+    })
+}
 
 else if(req.method === 'POST' && (req.url).includes ('/update-one'))
     {
@@ -99,7 +127,6 @@ let party = parsedUrl.query.url
 else if(req.method === 'GET' && (req.url).includes('/leaderboard'))
     {
 const leaderboard = options.leaderBoard()
-console.log(leaderboard)
 res.writeHead(200, {"Content-Type": "text/plain"});
      res.end(JSON.stringify(leaderboard))
     }

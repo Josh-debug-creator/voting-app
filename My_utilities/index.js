@@ -24,7 +24,7 @@ createNewParties(name, data){
      // Check if the party already exists
             if (fs.existsSync(filepath) === true) {
                     console.log('File already exists');
-                    return;
+                    return ;
                 }
             else {
                 
@@ -105,26 +105,59 @@ return updatedFile
 }
 leaderBoard(){
     let jsonData;
+    let sortedJson;
     let scoreSheet = []
     // read directory
    const files =  utilities.readDirectory()
 // checkk length of the array for each file
- files.forEach(function(file)
-{
-    const filePath = path.join(baseDir, file)
- const content =  utilities.readFileContent(filePath)
-  jsonData = JSON.parse(content)
- const  NameOfParty = jsonData[0].partyName
-//  if each input appended is a vote
- const  resultScore = jsonData.length
-//  if the total votes are recorded in each input appended, use the next line
-// const  resultScore = jsonData[0].votes
- scoreSheet.push(
-    {
-        [NameOfParty] : resultScore
-    })
-    })
-return scoreSheet
+files.forEach(function(file) {
+    const filePath = path.join(baseDir, file);
+    const content = utilities.readFileContent(filePath);
+    const jsonData = JSON.parse(content);
+
+    jsonData.forEach(party => {
+        const NameOfParty = party.partyName;
+        const resultScore = parseInt(party.votes);
+
+        scoreSheet.push({
+            partyName: NameOfParty,
+            votes: resultScore
+        });
+    });
+});
+
+// Sort the scoreSheet array by votes in descending order
+const totalResult = scoreSheet.sort((a, b) => b.votes - a.votes);
+
+console.log(totalResult);
+return totalResult;
+}
+
+// vote
+voteAction(fileName){
+    // read through the files
+    // update the vote by party name
+    utilities.doesPartyExist(fileName)
+    const filePath = path.join(baseDir, fileName)
+    const voteCount = this.readoneParty(fileName)
+    const totalVotes = voteCount[0].votes
+// let totalVotes =  firstObject.votes
+let total = parseInt(totalVotes)
+let partyVotes = total+= 1
+voteCount[0].votes = partyVotes.toString()
+const updatedVotes = JSON.stringify(voteCount)
+console.log( updatedVotes)
+const voted = fs.writeFile(filePath, updatedVotes, function(err,data){
+    if (err)throw err
+    else{
+        return data
+    }
+} )
+console.log(voted)
+return voted;
+
+
+
 
 }
 }
@@ -132,3 +165,7 @@ return scoreSheet
 
 const endPoint = new election()
 module.exports = endPoint
+
+
+
+// nums.sort(function (a,b){return a-b})
